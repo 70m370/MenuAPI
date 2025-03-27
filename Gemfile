@@ -1,5 +1,9 @@
 source "https://rubygems.org"
 
+#GEMS i like to use
+gem 'friendly_id'
+gem 'rails-erd'
+
 
 gem "rails", "~> 8.0.0"
 gem "sqlite3", ">= 2.1"
@@ -14,8 +18,6 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 
-# for slugs
-gem 'friendly_id'
 
 
 group :development, :test do
