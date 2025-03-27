@@ -1,7 +1,5 @@
 
 class Api::V1::MenusController < ApplicationController
-
-
   before_action :set_menu, only: %i[ show update destroy ]
 
   # GET /menus
@@ -21,8 +19,8 @@ class Api::V1::MenusController < ApplicationController
     @menu = Menu.new(menu_params)
 
     if @menu.save
-      #better looking json LOL
-      render json: {message: "Menu created successfully", menu: @menu}, status: :created 
+      # better looking json LOL
+      render json: { message: "Menu created successfully", menu: @menu }, status: :created
     else
       render json: @menu.errors, status: :unprocessable_entity
     end
