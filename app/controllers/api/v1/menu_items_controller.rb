@@ -18,10 +18,12 @@ class Api::V1::MenuItemsController < ApplicationController
     @menu_item = MenuItem.new(menu_item_params)
 
     if @menu_item.save
-      render json: { message: "Menu item created successfully", menu_item: @menu_item }, status: :created
+      render json: { message: "Menu Item created successfully", menu_item: @menu_item }, status: :created
     else
-      render json: @menu_item.errors, status: :unprocessable_entity
+      raise ActiveRecord::RecordInvalid, @menu_item
     end
+  rescue ActiveRecord::RecordInvalid => e
+    handle_record_invalid(e)
   end
 
   # PATCH/PUT /menu_items/1
@@ -29,8 +31,10 @@ class Api::V1::MenuItemsController < ApplicationController
     if @menu_item.update(menu_item_params)
       render json: @menu_item
     else
-      render json: @menu_item.errors, status: :unprocessable_entity
+      raise ActiveRecord::RecordInvalid, @menu_item
     end
+  rescue ActiveRecord::RecordInvalid => e
+    handle_record_invalid(e)
   end
 
   # DELETE /menu_items/1
@@ -41,7 +45,9 @@ class Api::V1::MenuItemsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_menu_item
-      @menu_item = MenuItem.find(params.expect(:id))
+      @menu_item = MenuItem.find(params[:id])
+    rescue StandardError => e
+      handle_record_not_found(e)
     end
 
     # Only allow a list of trusted parameters through.
