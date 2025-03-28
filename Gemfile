@@ -1,9 +1,11 @@
 source "https://rubygems.org"
 
-#GEMS i like to use
-gem 'friendly_id'
-gem 'rails-erd'
-gem 'active_model_serializers'
+# GEMS
+gem "friendly_id"
+gem "rails-erd"
+gem "active_model_serializers"
+gem "rspec-rails", "~> 7.1"
+
 
 gem "rails", "~> 8.0.0"
 gem "sqlite3", ">= 2.1"
