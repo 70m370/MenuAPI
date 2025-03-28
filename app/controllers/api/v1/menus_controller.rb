@@ -19,11 +19,12 @@ class Api::V1::MenusController < ApplicationController
     @menu = Menu.new(menu_params)
 
     if @menu.save
-      # better looking json LOL
       render json: { message: "Menu created successfully", menu: @menu }, status: :created
     else
-      render json: @menu.errors, status: :unprocessable_entity
+      raise ActiveRecord::RecordInvalid, @menu
     end
+  rescue ActiveRecord::RecordInvalid => e
+    handle_record_invalid(e)
   end
 
   # PATCH/PUT /menus/1
@@ -31,8 +32,10 @@ class Api::V1::MenusController < ApplicationController
     if @menu.update(menu_params)
       render json: @menu
     else
-      render json: @menu.errors, status: :unprocessable_entity
+      raise ActiveRecord::RecordInvalid, @menu
     end
+  rescue ActiveRecord::RecordInvalid => e
+    handle_record_invalid(e)
   end
 
   # DELETE /menus/1
@@ -43,7 +46,9 @@ class Api::V1::MenusController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_menu
-      @menu = Menu.find(params.expect(:id))
+      @menu = Menu.find(params[:id])
+    rescue StandardError => e
+      handle_record_not_found(e)
     end
 
     # Only allow a list of trusted parameters through.
