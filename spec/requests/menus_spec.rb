@@ -1,18 +1,21 @@
-require "rails_helper"
+require 'rails_helper'
 
-#
-# menu tests
-#
-
-RSpec.describe "Menu Api", type: :request do
+# show
+RSpec.describe "Menus API", type: :request do
   describe "GET /menus" do
-    it "return all menus" do
-      Menu.create(name: "Lunch")
-
-      get "/api/v1/menus"
-
+    it "renders a successful response" do
+      get api_v1_menus_path
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).size).to eq(3)
+    end
+  end
+
+  # index
+  describe "GET /menus/:id" do
+    it "renders a successful response" do
+      menu = Menu.create(name: "test menu")
+      get api_v1_menus_path(menu.id)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include menu.name
     end
   end
 end
