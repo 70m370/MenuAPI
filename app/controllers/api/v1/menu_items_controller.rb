@@ -40,6 +40,9 @@ class Api::V1::MenuItemsController < ApplicationController
   # DELETE /menu_items/1
   def destroy
     @menu_item.destroy!
+    if @menu_item.destroy
+      render json: { message: "successfully deleted"}, status: :ok
+    end
   end
 
   private

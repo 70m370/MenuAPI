@@ -41,6 +41,9 @@ class Api::V1::MenusController < ApplicationController
   # DELETE /menus/1
   def destroy
     @menu.destroy!
+    if @menu.destroy
+      render json: { message: "successfully deleted"}, status: :ok
+    end
   end
 
   private
@@ -53,6 +56,6 @@ class Api::V1::MenusController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def menu_params
-      params.require(:menu).permit(:name)
+      params.require(:menu).permit(:name, :restaurant_id)
     end
 end

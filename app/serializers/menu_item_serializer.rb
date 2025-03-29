@@ -1,3 +1,3 @@
 class MenuItemSerializer < ActiveModel::Serializer
-  attributes :id, :name, :menu_id
+  attributes :id, :name
 end
