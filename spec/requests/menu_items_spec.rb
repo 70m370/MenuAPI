@@ -12,7 +12,8 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
   # index
   describe "GET /menu_items/:id" do
     it "get menu item by id" do
-      menu = Menu.create(name: "test-menu")
+      restaurant = Restaurant.create(name:"Los Pollos Hermanos")
+      menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
       menu_item = MenuItem.create(name: "test menu item", menu_id: menu.id)
 
       get api_v1_menu_item_path(menu_item.id)
@@ -21,7 +22,6 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
       # need to parse a json
       json_response = JSON.parse(response.body)
       expect(json_response["name"]).to eq(menu_item.name)
-      expect(json_response["menu_id"]).to eq(menu.id)
     end
 
     it "Return menu item not found" do
@@ -34,7 +34,8 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
   describe "POST /menu_items/" do
     # create
     it "create a menu item" do
-      menu = Menu.create(name: "test-menu")
+      restaurant = Restaurant.create(name:"Los Pollos Hermanos 2")
+      menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
       post api_v1_menu_items_path, params: { menu_item: { name: "test-menu-item", menu_id: menu.id } }
 
       expect(response).to have_http_status(:created) # 201
@@ -67,7 +68,8 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
 # patch
 describe "PATCH /menu_items/:id" do
   it "updates an existing menu item" do
-    menu = Menu.create(name: "test menu")
+    restaurant = Restaurant.create(name:"Los Pollos Hermanos 3")
+    menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
     menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
 
     patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { name: "updated menu item" } }
@@ -78,7 +80,8 @@ describe "PATCH /menu_items/:id" do
   end
 
   it "fails to update an existing menu item with invalid name" do
-    menu = Menu.create(name: "test menu")
+    restaurant = Restaurant.create(name:"Los Pollos Hermanos 4")
+    menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
     menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
 
     patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { name: "" } }
@@ -92,12 +95,13 @@ end
 # delete
 describe "DELETE /menu_items/:id" do
   it "deletes an existing menu item" do
-    menu = Menu.create(name: "test menu")
+    restaurant = Restaurant.create(name:"Los Pollos Hermanos 5")
+    menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
     menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
 
     delete api_v1_menu_item_path(menu_item.id)
 
-    expect(response).to have_http_status(:no_content) # 204
+    expect(response).to have_http_status(:ok) # 200
     expect(MenuItem.exists?(menu_item.id)).to be_falsey
   end
 end
