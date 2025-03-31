@@ -41,7 +41,7 @@ class Api::V1::MenuItemsController < ApplicationController
   def destroy
     @menu_item.destroy!
     if @menu_item.destroy
-      render json: { message: "successfully deleted"}, status: :ok
+      render json: { message: "successfully deleted" }, status: :ok
     end
   end
 
@@ -55,6 +55,6 @@ class Api::V1::MenuItemsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def menu_item_params
-      params.require(:menu_item).permit(:name, :menu_id)
+      params.require(:menu_item).permit(:price, :menu_id, :item_id)
     end
 end
