@@ -39,10 +39,13 @@ class Api::V1::MenuItemsController < ApplicationController
 
   # DELETE /menu_items/1
   def destroy
-    @menu_item.destroy!
     if @menu_item.destroy
-      render json: { message: "successfully deleted" }, status: :ok
+      render json: { message: "menu_item deleted successfully" }, status: :ok
+    else
+      render json: { error: @menu_item.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { error: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   private

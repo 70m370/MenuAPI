@@ -5,12 +5,12 @@ class Api::V1::RestaurantsController < ApplicationController
   def index
     @restaurants = Restaurant.all
 
-    render json: @restaurants, include: ['menus.menu_items']
+    render json: @restaurants, include: [ "menus.menu_items" ]
   end
 
   # GET /restaurants/1
   def show
-    render json: @restaurants, include: ['menus.menu_items']
+    render json: @restaurants, include: [ "menus.menu_items" ]
   end
 
   # POST /restaurants
@@ -39,10 +39,13 @@ class Api::V1::RestaurantsController < ApplicationController
 
   # DELETE /restaurants/1
   def destroy
-    @restaurant.destroy!
     if @restaurant.destroy
-      render json: { message: "successfully deleted"}, status: :ok
+      render json: { message: "restaurant deleted successfully" }, status: :ok
+    else
+      render json: { error: @restaurant.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { error: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   private
