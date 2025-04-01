@@ -1,4 +1,4 @@
-class ItemsController < ApplicationController
+class Api::V1::ItemsController < ApplicationController
   before_action :set_item, only: %i[ show update destroy ]
 
   # GET /items
@@ -39,9 +39,13 @@ class ItemsController < ApplicationController
   # DELETE /items/1
   def destroy
     @item.destroy!
-    if @menu_item.destroy
-      render json: { message: "successfully deleted" }, status: :ok
+    if @item.destroy
+      render json: { message: "Item deleted successfully" }, status: :ok
+    else
+      render json: { error: @item.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { error: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   private

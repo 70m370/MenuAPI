@@ -12,16 +12,17 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
   # index
   describe "GET /menu_items/:id" do
     it "get menu item by id" do
-      restaurant = Restaurant.create(name:"Los Pollos Hermanos")
+      restaurant = Restaurant.create(name: "Los Pollos Hermanos")
       menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
-      menu_item = MenuItem.create(name: "test menu item", menu_id: menu.id)
+      item = Item.create(name: "test-item")
+      menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
 
       get api_v1_menu_item_path(menu_item.id)
 
       expect(response).to have_http_status(:ok) # 200
-      # need to parse a json
       json_response = JSON.parse(response.body)
-      expect(json_response["name"]).to eq(menu_item.name)
+      # puts "#{json_response} GET /menu_items/:id "
+      expect(json_response["name"]).to eq(item.name)
     end
 
     it "Return menu item not found" do
@@ -33,26 +34,37 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
   # post
   describe "POST /menu_items/" do
     # create
+
     it "create a menu item" do
-      restaurant = Restaurant.create(name:"Los Pollos Hermanos 2")
+      restaurant = Restaurant.create(name: "Los Pollos Hermanos 2")
       menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
-      post api_v1_menu_items_path, params: { menu_item: { name: "test-menu-item", menu_id: menu.id } }
+      item = Item.create(name: "test-item22")
+      menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
+
+      # Create a new unique item to avoid duplication
+      new_item = Item.create(name: "unique-test-item")
+
+      post api_v1_menu_items_path, params: { menu_item: { price: 10, menu_id: menu.id, item_id: new_item.id } }
 
       expect(response).to have_http_status(:created) # 201
 
       json_response = JSON.parse(response.body)
-      # puts json_response
-      expect(json_response["menu_item"]["name"]).to eq("test-menu-item")
-      expect(json_response["menu_item"]["menu_id"]).to eq(menu.id)
+      # puts json_response["details"]
+      expect(json_response["menu_item"]["price"]).to eq("10.0")
     end
 
-    it "create a empty name menu item" do
-      menu = Menu.create(name: "teste")
-      post api_v1_menu_items_path, params: { menu_item: { name: "", menu_id: menu.id } }
+    it "create a empty price menu item" do
+      restaurant = Restaurant.create(name: "Los Pollos Hermanos 3")
+      menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
+      item = Item.create(name: "test-item")
+      menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
+
+      post api_v1_menu_items_path, params: { menu_item: { menu_id: menu.id, item_id: item.id } }
       expect(response).to have_http_status(:unprocessable_entity) # 422
 
+      # json_response = JSON.parse(response.body)
       json_response = JSON.parse(response.body)
-      expect(json_response["details"]).to include("Name can't be blank")
+      expect(json_response["details"]).to include("Price can't be blank")
     end
 
     it "create a menu item without menu id" do
@@ -68,36 +80,42 @@ RSpec.describe "/menus_items/ endpoint", type: :request do
 # patch
 describe "PATCH /menu_items/:id" do
   it "updates an existing menu item" do
-    restaurant = Restaurant.create(name:"Los Pollos Hermanos 3")
+    restaurant = Restaurant.create(name: "Los Pollos Hermanos 4")
     menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
-    menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
+    item = Item.create(name: "test-item")
+    menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
 
-    patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { name: "updated menu item" } }
+    patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { price: 20 } }
 
     expect(response).to have_http_status(:ok) # 200
     menu_item.reload
-    expect(menu_item.name).to eq("updated menu item")
+    json_response = JSON.parse(response.body)
+    expect(json_response["price"]).to eq("20.0")
+    # expect(menu_item.name).to eq(20)
   end
 
   it "fails to update an existing menu item with invalid name" do
-    restaurant = Restaurant.create(name:"Los Pollos Hermanos 4")
+    restaurant = Restaurant.create(name: "Los Pollos Hermanos 4")
     menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
-    menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
+    item = Item.create(name: "test-item")
+    menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
 
-    patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { name: "" } }
+    patch api_v1_menu_item_path(menu_item.id), params: { menu_item: { price: "" } }
 
     expect(response).to have_http_status(:unprocessable_entity) # 422
     menu_item.reload
-    expect(menu_item.name).to eq("menu item") # It should remain the same because of validation failure
+    json_response = JSON.parse(response.body)
+    expect(json_response["details"]).to include("Price can't be blank")
   end
 end
 
 # delete
 describe "DELETE /menu_items/:id" do
   it "deletes an existing menu item" do
-    restaurant = Restaurant.create(name:"Los Pollos Hermanos 5")
+    restaurant = Restaurant.create(name: "Los Pollos Hermanos 6")
     menu = Menu.create(name: "test menu", restaurant_id: restaurant.id)
-    menu_item = MenuItem.create(name: "menu item", menu_id: menu.id)
+    item = Item.create(name: "test-item")
+    menu_item = MenuItem.create!(price: 10, menu_id: menu.id, item_id: item.id)
 
     delete api_v1_menu_item_path(menu_item.id)
 
