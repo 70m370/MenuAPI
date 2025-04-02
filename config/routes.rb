@@ -5,8 +5,13 @@ Rails.application.routes.draw do
       resources :menu_items
       resources :restaurants
       resources :items
+
+      # testing the json
+      resources :json_imports, only: [ :create ]
     end
   end
+
+
 
   root "welcome#index"
 end
